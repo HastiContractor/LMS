@@ -22,6 +22,9 @@ if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
 
+//serve uploaded files
+app.use("/uploads", express.static("uploads"));
+
 // Import and use routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
