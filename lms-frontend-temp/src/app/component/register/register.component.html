@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="content">
+    <h1 class="title">Learning Management System</h1>
+  </div>
+  <div class="register-box">
+    <h2>Register</h2>
+    <form (submit)="register()">
+      <div class="input-container">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="name" name="name" required />
+      </div>
+      <div class="input-container">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" required />
+      </div>
+      <div class="input-container">
+        <label>Password</label>
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+      <div class="input-container">
+        <label>Role</label>
+        <select>
+          <option value="student">Student</option>
+          <option value="instructor">Instructor</option>
+        </select>
+      </div>
+      <button type="submit">Register</button>
+    </form>
+    <p>
+      Already have an account? <a (click)="navigateToLogin()"><u>Login</u></a>
+    </p>
+  </div>
+</div>

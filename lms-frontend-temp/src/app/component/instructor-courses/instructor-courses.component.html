@@ -1,0 +1,205 @@
+<div class="dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.shrink]="isSidebarCollapsed">
+    <ul>
+      <li>
+        <div class="menu-toggle" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </div>
+      </li>
+      <li>
+        <a
+          (click)="navigateToDashboard()"
+          (mouseenter)="changeIcon('dashboard', true)"
+          (mouseleave)="changeIcon('dashboard', false)"
+        >
+          <i class="{{ dashboardIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Dashboard</span>
+          <span class="tooltip">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToCourses()"
+          (mouseenter)="changeIcon('courses', true)"
+          (mouseleave)="changeIcon('courses', false)"
+        >
+          <i class="{{ coursesIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Courses</span>
+          <span class="tooltip">Courses</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToStudents()"
+          (mouseenter)="changeIcon('students', true)"
+          (mouseleave)="changeIcon('students', false)"
+        >
+          <i class="{{ studentsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Students</span>
+          <span class="tooltip">Students</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToReports()"
+          (mouseenter)="changeIcon('reports', true)"
+          (mouseleave)="changeIcon('reports', false)"
+        >
+          <i class="{{ reportsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Reports</span>
+          <span class="tooltip">Reports</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToSettings()"
+          (mouseenter)="changeIcon('settings', true)"
+          (mouseleave)="changeIcon('settings', false)"
+        >
+          <i class="{{ settingsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Settings</span>
+          <span class="tooltip">Settings</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="logout()"
+          (mouseenter)="changeIcon('logout', true)"
+          (mouseleave)="changeIcon('logout', false)"
+        >
+          <i class="{{ logoutIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Logout</span>
+          <span class="tooltip">Logout</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content-wrapper">
+    <!-- Header (Fixed at the top) -->
+    <div class="header">
+      <div class="header-left">
+        <h2 class="logo">
+          Welcome,
+          <span>{{ userName }}</span>
+        </h2>
+      </div>
+
+      <!-- Move user-info outside header-left -->
+      <div class="user-info">
+        <i class="fas fa-bell"></i>
+        <img src="{{ imageURL }}" alt="Profile" class="profile-img" />
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="instructor-container">
+        <!-- Back Button -->
+        <a class="back-btn">← Back</a>
+
+        <h2>Course List</h2>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+          <input type="text" placeholder="Search" [(ngModel)]="searchQuery" />
+          <button class="search-btn">🔍</button>
+        </div>
+
+        <!-- Add Course Button -->
+        <button class="add-btn" (click)="toggleAddCourse()">
+          + Add Course
+        </button>
+
+        <!-- Course List Table -->
+        <table class="course-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Label</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let course of filteredCourses()">
+              <td>{{ course.title }}</td>
+              <td>{{ course.category }}</td>
+              <td>${{ course.price }}</td>
+              <td>
+                <span
+                  class="label"
+                  [ngStyle]="{ 'background-color': course.labelColor }"
+                >
+                  {{ course.label }}
+                </span>
+              </td>
+              <td>
+                <button (click)="editCourse(course)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button (click)="deleteCourse(course._id)" class="delete-btn">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <!-- <button (click)="toggleLessons(course._id)">📚</button> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Add/Edit Course Form (Hidden by Default) -->
+        <div class="course-form-container" *ngIf="showForm">
+          <form
+            [formGroup]="courseForm"
+            (ngSubmit)="isEditing ? updateCourse() : createCourse()"
+          >
+            <h3>{{ isEditing ? "Edit Course" : "Add New Course" }}</h3>
+
+            <label>Title:</label>
+            <input type="text" formControlName="title" required />
+
+            <label>Description:</label>
+            <input type="text" formControlName="description" required />
+
+            <label>Category:</label>
+            <input type="text" formControlName="category" required />
+
+            <label>Price:</label>
+            <input type="number" formControlName="price" required min="0" />
+
+            <!-- <label>Image URL:</label>
+            <input type="text" formControlName="image" required /> -->
+
+            <label>Label:</label>
+            <select formControlName="label">
+              <option value="New">New</option>
+              <option value="Popular">Popular</option>
+              <option value="Best for Developers">Best for Developers</option>
+            </select>
+
+            <label>Label Color:</label>
+            <select formControlName="labelColor">
+              <option value="green">Green(New)</option>
+              <option value="blue">Blue(Popular)</option>
+              <option value="red">Red(Best for Developers)</option>
+            </select>
+
+            <button type="submit">
+              {{ isEditing ? "Update Course" : "Create Course" }}
+            </button>
+            <button
+              type="button"
+              class="cancel-btn"
+              (click)="toggleAddCourse()"
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
