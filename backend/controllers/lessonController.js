@@ -3,15 +3,13 @@ const Lesson = require("../models/Lesson");
 // Add a lesson to a course
 exports.addLesson = async (req, res) => {
   try {
-    const { title, content, videoUrl, type } = req.body;
+    const { title, sections } = req.body;
     const courseId = req.params.courseId;
 
     const newLesson = new Lesson({
       title,
-      content,
-      videoUrl,
+      sections,
       course: courseId,
-      type,
     });
 
     await newLesson.save();

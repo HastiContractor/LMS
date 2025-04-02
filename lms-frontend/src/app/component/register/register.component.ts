@@ -13,6 +13,7 @@ export class RegisterComponent {
   name = '';
   email = '';
   password = '';
+  role = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -22,6 +23,7 @@ export class RegisterComponent {
         name: this.name,
         email: this.email,
         password: this.password,
+        role: this.role,
       })
       .subscribe(
         () => {

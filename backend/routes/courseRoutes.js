@@ -9,10 +9,16 @@ const {
   getInstructorCourses,
 } = require("../controllers/courseController");
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, createCourse);
+router.post(
+  "/create",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  createCourse
+);
 router.get("/", getCourses);
 router.get("/instructor/:id", authMiddleware, getInstructorCourses);
 router.get("/count/:id", authMiddleware, countCourse);

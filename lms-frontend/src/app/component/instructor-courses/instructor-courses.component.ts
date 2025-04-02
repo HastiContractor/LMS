@@ -8,6 +8,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  FormArray,
 } from '@angular/forms';
 
 @Component({
@@ -26,6 +27,11 @@ export class InstructorCoursesComponent implements OnInit {
   showForm: boolean = false;
   searchQuery: string = '';
 
+  lessons: any[] = [];
+  selectedCourseId: string | null = null;
+  lessonForm!: FormGroup;
+  showLessonForm: boolean = false;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -39,6 +45,10 @@ export class InstructorCoursesComponent implements OnInit {
       //image: ['', Validators.required],
       label: ['New'],
       labelColor: ['green'],
+    });
+    this.lessonForm = this.fb.group({
+      title: ['', Validators.required],
+      sections: this.fb.array([]),
     });
   }
 
@@ -177,6 +187,97 @@ export class InstructorCoursesComponent implements OnInit {
     return this.courses.filter((course) =>
       course.title.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+  }
+
+  //fetch lessons
+  getLessons(courseId: string) {
+    this.selectedCourseId = courseId;
+    this.http
+      .get(`http://localhost:3000/api/lessons/${courseId}`, {
+        headers: { Authorization: localStorage.getItem('token') || '' },
+      })
+      .subscribe(
+        (lessons: any) => {
+          this.lessons = lessons;
+        },
+        (error) => {
+          console.error('Error fetching lessons:', error);
+        }
+      );
+  }
+
+  get sections(): FormArray {
+    return this.lessonForm.get('sections') as FormArray;
+  }
+  addSection() {
+    this.sections.push(
+      this.fb.group({
+        heading: ['', Validators.required],
+        content: ['', Validators.required],
+        imageUrl: [''],
+        videoUrl: [''],
+      })
+    );
+  }
+  removeSection(index: number) {
+    this.sections.removeAt(index);
+  }
+  toggleLessonForm() {
+    this.showLessonForm = !this.showLessonForm;
+    if (!this.showLessonForm) {
+      this.lessonForm.reset();
+    }
+  }
+  //add lesson
+  addLesson() {
+    if (!this.selectedCourseId || this.lessonForm.invalid) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No token found. Please log in again.');
+      return;
+    }
+    console.log('Token: ', token);
+
+    this.http
+      .post(
+        `http://localhost:3000/api/lessons/add/${this.selectedCourseId}`,
+        this.lessonForm.value,
+        { headers: { Authorization: token } }
+      )
+      .subscribe(
+        (response) => {
+          alert('Lesson added successfully!');
+          if (this.selectedCourseId !== null) {
+            this.getLessons(this.selectedCourseId!);
+          }
+          this.lessonForm.reset();
+          this.sections.clear();
+          this.showLessonForm = false;
+        },
+        (error) => {
+          console.error('Error adding lesson:', error);
+        }
+      );
+  }
+
+  //delete lesson
+  deleteLesson(lessonId: string) {
+    if (!confirm('Are you sure you want to delete this lesson?')) return;
+
+    this.http
+      .delete(`http://localhost:3000/api/lessons/${lessonId}`, {
+        headers: { Authorization: localStorage.getItem('token') || '' },
+      })
+      .subscribe(
+        () => {
+          alert('Lesson deleted successfully!');
+          this.getLessons(this.selectedCourseId!);
+        },
+        (error) => {
+          console.error('Error deleting lesson:', error);
+        }
+      );
   }
 
   dashboardIcon = 'fas fa-home';

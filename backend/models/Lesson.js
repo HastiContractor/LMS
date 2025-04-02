@@ -1,18 +1,19 @@
 const mongoose = require("mongoose");
 
+const SectionSchema = new mongoose.Schema({
+  heading: { type: String, required: true },
+  content: { type: String, required: true },
+  imageUrl: { type: String },
+  videoUrl: { type: String },
+});
+
 const LessonSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  content: { type: String, required: true },
-  videoUrl: { type: String },
+  sections: [SectionSchema],
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Course",
     required: true,
-  },
-  type: {
-    type: String,
-    enum: ["lesson", "quiz", "assignment"],
-    default: "lesson",
   },
   createdAt: { type: Date, default: Date.now },
 });

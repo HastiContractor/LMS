@@ -240,8 +240,20 @@
   }
 
   .delete-btn {
-    background: red;
-    color: white;
+    background-color: white;
+    color: red;
+  }
+  .edit-btn {
+    background-color: transparent;
+    color: rgb(67, 215, 215);
+  }
+  .lesson-btn {
+    background-color: transparent;
+    color: #ff9800;
+  }
+
+  button:hover {
+    cursor: pointer;
   }
 }
 
@@ -266,14 +278,49 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    select,
+    option :hover {
+      cursor: pointer;
+    }
+    textarea {
+      height: 10px;
+    }
 
     button {
+      color: white;
+      border: none;
+      background: #ff9800;
       padding: 10px;
       cursor: pointer;
     }
+    .section-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-top: 10px;
+      background: #f9f9f9;
+    }
+    .add-section-btn,
+    .submit-lesson-btn,
+    .remove-section-btn {
+      background: #ff9800;
+      border: none;
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    textarea {
+      height: 320px;
+    }
 
     .cancel-btn {
-      background: #ccc;
+      color: white;
+      border: none;
+      background: #ff9800;
     }
   }
 }

@@ -38,6 +38,7 @@ export class DashboardComponent implements OnInit {
         )
         .subscribe(
           (response) => {
+            console.log('User: ', response.name);
             this.userName = response.name;
             this.imageURL = response.profilePicture || 'assets/profile.png';
             console.log('Profile Image URL:', this.imageURL); // Debugging

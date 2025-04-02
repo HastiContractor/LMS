@@ -138,17 +138,95 @@
                 </span>
               </td>
               <td>
-                <button (click)="editCourse(course)">
+                <button (click)="editCourse(course)" class="edit-btn">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button (click)="deleteCourse(course._id)" class="delete-btn">
                   <i class="fas fa-trash"></i>
                 </button>
-                <!-- <button (click)="toggleLessons(course._id)">📚</button> -->
+                <button (click)="getLessons(course._id)" class="lesson-btn">
+                  <i class="fas fa-book-open"></i>
+                </button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!--Display Lessons-->
+        <div *ngIf="selectedCourseId">
+          <h3>Lessons for Selected Course</h3>
+
+          <button class="add-btn" (click)="toggleLessonForm()">
+            + Add Lesson
+          </button>
+
+          <table class="course-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lesson of lessons">
+                <td>{{ lesson.title }}</td>
+                <td>
+                  <button (click)="deleteLesson(lesson._id)" class="delete-btn">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Add Lesson Form -->
+          <div class="course-form-container" *ngIf="showLessonForm">
+            <form [formGroup]="lessonForm" (ngSubmit)="addLesson()">
+              <label>Lesson Title:</label>
+              <input type="text" formControlName="title" required />
+
+              <h3>Lesson Sections</h3>
+              <div formArrayName="sections">
+                <div
+                  class="section-container"
+                  *ngFor="let section of sections.controls; let i = index"
+                  [formGroupName]="i"
+                >
+                  <label>Heading:</label>
+                  <input type="text" formControlName="heading" required />
+
+                  <label>Content:</label>
+                  <textarea formControlName="content"></textarea>
+
+                  <label>Image URL:</label>
+                  <input type="text" formControlName="imageUrl" />
+
+                  <label>Video URL:</label>
+                  <input type="text" formControlName="videoUrl" />
+
+                  <button
+                    type="button"
+                    (click)="removeSection(i)"
+                    class="remove-section-btn"
+                  >
+                    Remove Section
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                (click)="addSection()"
+                class="add-section-btn"
+              >
+                + Add Section
+              </button>
+              <button type="submit" class="submit-lesson-btn">
+                Add Lesson
+              </button>
+            </form>
+          </div>
+        </div>
 
         <!-- Add/Edit Course Form (Hidden by Default) -->
         <div class="course-form-container" *ngIf="showForm">
@@ -162,7 +240,7 @@
             <input type="text" formControlName="title" required />
 
             <label>Description:</label>
-            <input type="text" formControlName="description" required />
+            <textarea formControlName="description" required></textarea>
 
             <label>Category:</label>
             <input type="text" formControlName="category" required />
