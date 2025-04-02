@@ -56,6 +56,28 @@ export class CoursesComponent implements OnInit {
     );
   }
 
+  enrollCourse(courseId: string) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to enroll in a course');
+      return;
+    }
+    this.http
+      .post(
+        `http://localhost:3000/api/courses/enroll/${courseId}`,
+        {},
+        { headers: { Authorization: token } }
+      )
+      .subscribe(
+        (response: any) => {
+          alert('Successfully enrolled in the course!');
+        },
+        (error) => {
+          alert(error.error.error || 'Enrollment failed. Try again.');
+        }
+      );
+  }
+
   dashboardIcon = 'fas fa-home';
   coursesIcon = 'fas fa-book';
   studentsIcon = 'fas fa-users';

@@ -95,6 +95,38 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content"></div>
+    <div class="main-content">
+      <div class="students-container">
+        <h2>Students List</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Enrolled Courses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of students">
+              <td>{{ student.name }}</td>
+              <td>{{ student.email }}</td>
+              <td>
+                <span *ngIf="student.enrolledCourses.length > 0">
+                  <ul>
+                    <li *ngFor="let course of student.enrolledCourses">
+                      {{ course.title }}
+                    </li>
+                  </ul>
+                </span>
+                <span *ngIf="student.enrolledCourses.length === 0">
+                  No Course Enrolled
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

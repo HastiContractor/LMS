@@ -1,4 +1,5 @@
 const Course = require("../models/Course");
+const User = require("../models/User");
 
 // Create a new course
 exports.createCourse = async (req, res) => {
@@ -36,15 +37,22 @@ exports.getCourses = async (req, res) => {
 // Enroll a student in a course
 exports.enrollCourse = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.courseId);
+    const { courseId } = req.params;
+    const studentId = req.user.id;
+    const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ error: "Course not found" });
-
-    if (!course.students.includes(req.user.id)) {
-      course.students.push(req.user.id);
+    const student = await User.findById(studentId);
+    if (!student || student.role !== "student") {
+      return res.status(403).json({ error: "Only students can enroll" });
+    }
+    if (!course.students.includes(studentId)) {
+      course.students.push(studentId);
+      student.enrolledCourses.push(courseId);
       await course.save();
-      res.json({ message: "Enrolled successfully", course });
+      await student.save();
+      return res.json({ message: "Enrolled successfully", course });
     } else {
-      res.status(400).json({ error: "Already enrolled" });
+      return res.status(400).json({ error: "Already enrolled" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -128,5 +136,26 @@ exports.totalStudents = async (req, res) => {
   } catch (error) {
     console.error("Error fetching student count:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getStudents = async (req, res) => {
+  try {
+    const instructorId = req.user.id;
+    const instructorCourse = await Course.find({ instructor: instructorId });
+    if (!instructorCourse.length) {
+      return res.json({ message: "No students found, no courses assigned." });
+    }
+    const courseIds = instructorCourse.map((course) => course._id);
+
+    const students = await User.find({
+      role: "student",
+      enrolledCourses: { $in: courseIds },
+    })
+      .select("name email enrolledCourses createdAt")
+      .populate({ path: "enrolledCourses", select: "title" });
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

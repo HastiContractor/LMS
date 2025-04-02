@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Student } from '../../models/student.model';
 
 @Component({
   selector: 'app-students',
@@ -13,10 +14,13 @@ export class StudentsComponent implements OnInit {
   userName: string = '';
   imageURL: string = '';
 
+  students: Student[] = [];
+
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.getUserProfile();
+    this.getStudents();
   }
 
   getUserProfile() {
@@ -40,6 +44,22 @@ export class StudentsComponent implements OnInit {
           }
         );
     }
+  }
+
+  getStudents() {
+    const token = localStorage.getItem('token') as string;
+    this.http
+      .get<Student[]>('http://localhost:3000/api/courses/students', {
+        headers: { Authorization: token },
+      })
+      .subscribe(
+        (response) => {
+          this.students = response;
+        },
+        (error) => {
+          console.error('Error fetching students: ', error);
+        }
+      );
   }
 
   dashboardIcon = 'fas fa-home';

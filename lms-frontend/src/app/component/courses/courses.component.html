@@ -115,7 +115,9 @@
             <h3>{{ course.title }}</h3>
             <p>{{ course.description }}</p>
             <div class="course-footer">
-              <button class="enroll-btn">Enroll Now</button>
+              <button class="enroll-btn" (click)="enrollCourse(course._id!)">
+                Enroll Now
+              </button>
               <span class="price" *ngIf="course.price"
                 >${{ course.price }}</span
               >
