@@ -214,7 +214,7 @@
   color: white;
   cursor: pointer;
   margin-bottom: 15px;
-  border-radius: 10%;
+  border-radius: 8px;
 }
 
 .course-table {
@@ -323,4 +323,98 @@
       background: #ff9800;
     }
   }
+}
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dim background */
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 420px;
+  text-align: center;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  /* Enable scrolling */
+  max-height: 80vh; /* Limits the height */
+  overflow-y: auto; /* Allows vertical scrolling */
+}
+/* Hide scrollbar for a cleaner look */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+  font-weight: bold;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.3s;
+  margin: 0 8px;
+}
+
+.add-quiz-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.save-quiz-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+.close-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.delete-quiz-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: red;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
 }

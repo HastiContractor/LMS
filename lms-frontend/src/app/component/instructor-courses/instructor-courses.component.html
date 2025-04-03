@@ -177,10 +177,69 @@
                   <button (click)="deleteLesson(lesson._id)" class="delete-btn">
                     <i class="fas fa-trash"></i>
                   </button>
+                  <button (click)="openQuizModal(lesson)" class="quiz-btn">
+                    <i class="fas fa-question-circle"></i> Quiz
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <!-- Quiz Modal -->
+          <div class="modal" *ngIf="quizModalOpen">
+            <div class="modal-content">
+              <h3>Manage Quiz for {{ selectedLesson?.title }}</h3>
+
+              <div *ngFor="let quiz of selectedLesson?.quizzes; let i = index">
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.question"
+                  placeholder="Enter question"
+                />
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.options[0]"
+                  placeholder="Option 1"
+                />
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.options[1]"
+                  placeholder="Option 2"
+                />
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.options[2]"
+                  placeholder="Option 3"
+                />
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.options[3]"
+                  placeholder="Option 4"
+                />
+                <input
+                  type="text"
+                  [(ngModel)]="quiz.correctAnswer"
+                  placeholder="Correct Answer"
+                />
+                <button
+                  (click)="deleteQuiz(i, quiz._id)"
+                  class="delete-quiz-btn"
+                >
+                  ❌
+                </button>
+              </div>
+
+              <button (click)="addQuiz()" class="add-quiz-btn">
+                ➕ Add Question
+              </button>
+              <button (click)="saveQuizzes()" class="save-quiz-btn">
+                💾 Save
+              </button>
+              <button (click)="closeQuizModal()" class="close-btn">
+                ❌ Close
+              </button>
+            </div>
+          </div>
 
           <!-- Add Lesson Form -->
           <div class="course-form-container" *ngIf="showLessonForm">

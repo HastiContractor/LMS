@@ -34,6 +34,9 @@ export class InstructorCoursesComponent implements OnInit {
   editingLessonId: string | null = null;
   isEditing: boolean = false;
 
+  quizModalOpen = false;
+  selectedLesson: any = null;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -331,6 +334,91 @@ export class InstructorCoursesComponent implements OnInit {
         },
         (error) => {
           console.error('Error deleting lesson:', error);
+        }
+      );
+  }
+
+  //open quiz modal
+  openQuizModal(lesson: any) {
+    this.selectedLesson = JSON.parse(JSON.stringify(lesson)); // Clone lesson object
+    if (!this.selectedLesson.quizzes) {
+      this.selectedLesson.quizzes = []; // Ensure quizzes array exists
+    }
+    this.quizModalOpen = true;
+  }
+
+  //close quiz modal
+  closeQuizModal() {
+    this.quizModalOpen = false;
+    this.selectedLesson = null;
+  }
+
+  //add a new quiz question
+  addQuiz() {
+    if (!this.selectedLesson.quizzes) {
+      this.selectedLesson.quizzes = []; // Ensure quizzes array exists
+    }
+    this.selectedLesson.quizzes.push({
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: '',
+    });
+  }
+
+  //delete a quiz question
+  deleteQuiz(quizIndex: number, quizId: string) {
+    if (!confirm('Are you sure you want to delete this quiz?')) return;
+
+    this.http
+      .delete(
+        `http://localhost:3000/api/lessons/${this.selectedLesson._id}/quiz/${quizId}`,
+        { headers: { Authorization: localStorage.getItem('token') || '' } }
+      )
+      .subscribe(
+        (response: any) => {
+          alert('Quiz deleted successfully');
+          console.log('Quiz deleted successfully', response);
+
+          // Remove quiz from UI after deletion
+          this.selectedLesson.quizzes.splice(quizIndex, 1);
+          this.getLessons(this.selectedCourseId!);
+        },
+        (error) => {
+          console.error('Error deleting quiz:', error);
+        }
+      );
+  }
+
+  //save quizzes to backend
+  saveQuizzes() {
+    const quizData = {
+      question:
+        this.selectedLesson.quizzes[this.selectedLesson.quizzes.length - 1]
+          .question,
+      options:
+        this.selectedLesson.quizzes[this.selectedLesson.quizzes.length - 1]
+          .options,
+      correctAnswer:
+        this.selectedLesson.quizzes[this.selectedLesson.quizzes.length - 1]
+          .correctAnswer,
+    };
+    this.http
+      .post(
+        `http://localhost:3000/api/lessons/${this.selectedLesson._id}/quiz`,
+        quizData,
+        {
+          headers: { Authorization: localStorage.getItem('token') || '' },
+        }
+      )
+      .subscribe(
+        (response: any) => {
+          alert('Quiz added successfully');
+          console.log('Quiz added successfully', response);
+          this.getLessons(this.selectedCourseId!);
+          this.closeQuizModal();
+        },
+        (error) => {
+          console.error('Error adding quiz:', error);
         }
       );
   }

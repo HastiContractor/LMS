@@ -5,6 +5,9 @@ const {
   deleteLesson,
   getNewestLessons,
   updateLesson,
+  addQuiz,
+  updateQuiz,
+  deleteQuiz,
 } = require("../controllers/lessonController");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -31,4 +34,24 @@ router.delete(
   roleMiddleware(["admin", "instructor"]),
   deleteLesson
 );
+
+router.post(
+  "/:lessonId/quiz",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  addQuiz
+);
+router.put(
+  "/:lessonId/quiz/:quizId",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  updateQuiz
+);
+router.delete(
+  "/:lessonId/quiz/:quizId",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  deleteQuiz
+);
+
 module.exports = router;

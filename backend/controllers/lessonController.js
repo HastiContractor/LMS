@@ -79,3 +79,61 @@ exports.getNewestLessons = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+//add quiz
+exports.addQuiz = async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const { question, options, correctAnswer } = req.body;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+    lesson.quizzes.push({ question, options, correctAnswer });
+    await lesson.save();
+    res.status(201).json({ message: "Quiz added successfully", lesson });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding quiz", error });
+  }
+};
+
+//update quiz
+exports.updateQuiz = async (req, res) => {
+  try {
+    const { lessonId, quizId } = req.params;
+    const { question, options, correctAnswer } = req.body;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+    const quiz = lesson.quizzes.id(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+    quiz.question = question;
+    quiz.options = options;
+    quiz.correctAnswer = correctAnswer;
+    await lesson.save();
+    res.status(200).json({ message: "Quiz updated successfully", lesson });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating quiz", error });
+  }
+};
+
+//delete quiz
+exports.deleteQuiz = async (req, res) => {
+  try {
+    const { lessonId, quizId } = req.params;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+    lesson.quizzes = lesson.quizzes.filter(
+      (quiz) => quiz._id.toString() !== quizId
+    );
+    await lesson.save();
+    res.status(200).json({ message: "Quiz deleted successfully", lesson });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting quiz", error });
+  }
+};
