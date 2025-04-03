@@ -9,6 +9,7 @@ const {
   totalStudents,
   getInstructorCourses,
   getStudents,
+  getCourseDetails,
 } = require("../controllers/courseController");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -22,6 +23,7 @@ router.post(
   createCourse
 );
 router.get("/", getCourses);
+router.get("/:courseId", getCourseDetails);
 router.get("/instructor/:id", authMiddleware, getInstructorCourses);
 router.get("/count/:id", authMiddleware, countCourse);
 router.get("/students/count/:id", authMiddleware, totalStudents);

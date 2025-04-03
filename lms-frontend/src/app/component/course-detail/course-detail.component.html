@@ -1,1 +1,62 @@
-<p>course-detail works!</p>
+<div *ngIf="course" class="course-container">
+  <h1>{{ course.title }}</h1>
+  <p>{{ course.description }}</p>
+
+  <!--Navigation Buttons-->
+  <div class="nav-buttons">
+    <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
+      ⬅️Previous
+    </button>
+    <button
+      (click)="nextLesson()"
+      [disabled]="lessonIndex === course.lessons.length - 1"
+    >
+      Next➡️
+    </button>
+  </div>
+
+  <!--Display Lessons-->
+  <div *ngIf="course.lessons.length > 0" class="lesson-container">
+    <h2>Lesson:{{ course.lessons[lessonIndex].title }}</h2>
+    <!--Sections-->
+    <div *ngFor="let section of course.lessons[lessonIndex].sections">
+      <h3>{{ section.heading }}</h3>
+      <p>{{ section.content }}</p>
+      <img
+        *ngIf="section.imageUrl"
+        [src]="section.imageUrl"
+        alt="Lesson Image"
+      />
+      <video *ngIf="section.videoUrl" controls>
+        <source [src]="section.videoUrl" type="video/mp4" />
+        Your browser doent support the video
+      </video>
+    </div>
+
+    <!--Quizzes-->
+    <div class="quiz-container">
+      <h3>Quiz</h3>
+      <div *ngFor="let quiz of course.lessons[lessonIndex].quizzes">
+        <p>
+          <b>{{ quiz.question }}</b>
+        </p>
+        <ul>
+          <li *ngFor="let option of quiz.options">{{ option }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!--Navigation Buttons-->
+    <div class="nav-buttons">
+      <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
+        ⬅️Previous
+      </button>
+      <button
+        (click)="nextLesson()"
+        [disabled]="lessonIndex === course.lessons.length - 1"
+      >
+        Next➡️
+      </button>
+    </div>
+  </div>
+</div>

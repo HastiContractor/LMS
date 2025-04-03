@@ -10,6 +10,7 @@ const CourseSchema = new mongoose.Schema({
     required: true,
   },
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
   price: { type: Number, required: true, default: 0 }, // Course price
   image: { type: String, default: "assets/default.png" }, // Image URL
   label: { type: String, default: "New" }, // Optional label (e.g., "Popular")

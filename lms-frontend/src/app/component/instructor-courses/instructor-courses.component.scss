@@ -418,3 +418,17 @@ button {
 button:hover {
   opacity: 0.8;
 }
+
+.view-btn {
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.view-btn:hover {
+  //background: #218838;
+}

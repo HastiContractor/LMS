@@ -183,3 +183,23 @@ exports.getStudents = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getCourseDetails = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.courseId)
+      .populate({
+        path: "lessons",
+        populate: { path: "sections quizzes" }, // Also populates quizzes & sections
+      })
+      .exec();
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.json(course);
+  } catch (error) {
+    console.error("Error fetching course details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
