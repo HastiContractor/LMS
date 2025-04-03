@@ -3,6 +3,7 @@ const {
   createCourse,
   getCourses,
   enrollCourse,
+  updateCourse,
   deleteCourse,
   countCourse,
   totalStudents,
@@ -26,6 +27,17 @@ router.get("/count/:id", authMiddleware, countCourse);
 router.get("/students/count/:id", authMiddleware, totalStudents);
 router.get("/students", authMiddleware, getStudents);
 router.post("/enroll/:courseId", authMiddleware, enrollCourse);
-router.delete("/:courseId", authMiddleware, deleteCourse);
+router.delete(
+  "/:courseId",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  deleteCourse
+);
+router.put(
+  "/:courseId",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  updateCourse
+);
 
 module.exports = router;

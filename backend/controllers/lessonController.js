@@ -30,6 +30,28 @@ exports.getLessons = async (req, res) => {
   }
 };
 
+// Update a lesson
+exports.updateLesson = async (req, res) => {
+  try {
+    const { title, sections } = req.body;
+    const lessonId = req.params.lessonId;
+
+    const updatedLesson = await Lesson.findByIdAndUpdate(
+      lessonId,
+      { title, sections },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedLesson) {
+      return res.status(404).json({ error: "Lesson not found" });
+    }
+
+    res.json({ message: "Lesson updated", lesson: updatedLesson });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Delete a lesson (only instructors/admins)
 exports.deleteLesson = async (req, res) => {
   try {

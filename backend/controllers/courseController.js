@@ -24,6 +24,30 @@ exports.createCourse = async (req, res) => {
   }
 };
 
+//update course
+exports.updateCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const updatedData = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Update course with new data
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      updatedData,
+      { new: true }
+    );
+
+    res.json({ message: "Course updated", course: updatedCourse });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Get all courses
 exports.getCourses = async (req, res) => {
   try {

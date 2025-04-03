@@ -4,6 +4,7 @@ const {
   getLessons,
   deleteLesson,
   getNewestLessons,
+  updateLesson,
 } = require("../controllers/lessonController");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -18,6 +19,12 @@ router.post(
 );
 router.get("/:courseId", authMiddleware, getLessons);
 router.get("/newest", authMiddleware, getNewestLessons);
+router.put(
+  "/:lessonId",
+  authMiddleware,
+  roleMiddleware(["admin", "instructor"]),
+  updateLesson
+);
 router.delete(
   "/:lessonId",
   authMiddleware,

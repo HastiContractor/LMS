@@ -171,6 +171,9 @@
               <tr *ngFor="let lesson of lessons">
                 <td>{{ lesson.title }}</td>
                 <td>
+                  <button (click)="editLesson(lesson)" class="edit-btn">
+                    <i class="fas fa-edit"></i>
+                  </button>
                   <button (click)="deleteLesson(lesson._id)" class="delete-btn">
                     <i class="fas fa-trash"></i>
                   </button>
@@ -181,7 +184,11 @@
 
           <!-- Add Lesson Form -->
           <div class="course-form-container" *ngIf="showLessonForm">
-            <form [formGroup]="lessonForm" (ngSubmit)="addLesson()">
+            <form
+              [formGroup]="lessonForm"
+              (ngSubmit)="isEditing ? updateLesson() : addLesson()"
+            >
+              <h3>{{ isEditing ? "Edit Lesson" : "Add New Lesson" }}</h3>
               <label>Lesson Title:</label>
               <input type="text" formControlName="title" required />
 
@@ -222,7 +229,14 @@
                 + Add Section
               </button>
               <button type="submit" class="submit-lesson-btn">
-                Add Lesson
+                {{ isEditing ? "Update Lesson" : "Add Lesson" }}
+              </button>
+              <button
+                type="button"
+                class="cancel-btn"
+                (click)="toggleLessonForm()"
+              >
+                Cancel
               </button>
             </form>
           </div>
@@ -234,7 +248,7 @@
             [formGroup]="courseForm"
             (ngSubmit)="isEditing ? updateCourse() : createCourse()"
           >
-            <h3>{{ isEditing ? "Edit Course" : "Add New Course" }}</h3>
+            <h3>{{ isEditingCourse ? "Edit Course" : "Add New Course" }}</h3>
 
             <label>Title:</label>
             <input type="text" formControlName="title" required />

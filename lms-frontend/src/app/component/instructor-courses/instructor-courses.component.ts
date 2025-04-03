@@ -22,15 +22,17 @@ export class InstructorCoursesComponent implements OnInit {
   imageURL: string = '';
   courses: any[] = [];
   courseForm: FormGroup;
-  isEditing: boolean = false;
+  isEditingCourse: boolean = false;
   editingCourseId: string | null = null;
   showForm: boolean = false;
   searchQuery: string = '';
 
   lessons: any[] = [];
   selectedCourseId: string | null = null;
-  lessonForm!: FormGroup;
+  lessonForm: FormGroup;
   showLessonForm: boolean = false;
+  editingLessonId: string | null = null;
+  isEditing: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -132,7 +134,7 @@ export class InstructorCoursesComponent implements OnInit {
   }
 
   editCourse(course: any) {
-    this.isEditing = true;
+    this.isEditingCourse = true;
     this.editingCourseId = course._id;
     this.courseForm.patchValue(course);
     this.showForm = true;
@@ -146,10 +148,10 @@ export class InstructorCoursesComponent implements OnInit {
       this.http
         .put(
           `http://localhost:3000/api/courses/${this.editingCourseId}`,
+          this.courseForm.value,
           {
             headers: { Authorization: token },
-          },
-          this.courseForm.value
+          }
         )
         .subscribe(() => {
           alert('Course updated successfully!');
@@ -178,7 +180,7 @@ export class InstructorCoursesComponent implements OnInit {
   toggleAddCourse() {
     this.showForm = !this.showForm;
     if (!this.showForm) {
-      this.isEditing = false;
+      this.isEditingCourse = false;
       this.courseForm.reset();
     }
   }
@@ -225,6 +227,7 @@ export class InstructorCoursesComponent implements OnInit {
   toggleLessonForm() {
     this.showLessonForm = !this.showLessonForm;
     if (!this.showLessonForm) {
+      this.isEditing = false;
       this.lessonForm.reset();
     }
   }
@@ -251,12 +254,64 @@ export class InstructorCoursesComponent implements OnInit {
           if (this.selectedCourseId !== null) {
             this.getLessons(this.selectedCourseId!);
           }
-          this.lessonForm.reset();
-          this.sections.clear();
-          this.showLessonForm = false;
+          this.toggleLessonForm();
         },
         (error) => {
           console.error('Error adding lesson:', error);
+        }
+      );
+  }
+
+  editLesson(lesson: any) {
+    this.isEditing = true;
+    this.editingLessonId = lesson._id;
+    this.showLessonForm = true;
+    //reset form to avoid duplication
+    this.lessonForm.reset();
+    this.sections.clear();
+    //patch lesson title
+    this.lessonForm.patchValue({
+      title: lesson.title,
+    });
+    //add section dynamically
+    if (lesson.sections && lesson.sections.length > 0) {
+      lesson.sections.forEach((section: any) => {
+        this.sections.push(
+          this.fb.group({
+            heading: [section.heading, Validators.required],
+            content: [section.content, Validators.required],
+            imageUrl: [section.imageUrl || ''],
+            videoUrl: [section.videoUrl || ''],
+          })
+        );
+      });
+    }
+  }
+
+  //update lesson
+  updateLesson() {
+    if (!this.editingLessonId || this.lessonForm.invalid) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No token found. Please log in again.');
+      return;
+    }
+
+    this.http
+      .put(
+        `http://localhost:3000/api/lessons/${this.editingLessonId}`,
+        this.lessonForm.value,
+        { headers: { Authorization: token } }
+      )
+      .subscribe(
+        () => {
+          alert('Lesson updated successfully!');
+          this.getLessons(this.selectedCourseId!);
+          this.toggleLessonForm();
+        },
+        (error) => {
+          console.error('Error updating lesson:', error);
         }
       );
   }
