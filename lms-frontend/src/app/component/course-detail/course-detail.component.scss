@@ -11,6 +11,26 @@
   margin-top: 20px;
   border-radius: 10px;
   background: #f9f9f9;
+  text-align: left;
+  overflow-x: auto;
+}
+
+.lesson-container pre {
+  text-align: justify;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #f0f0f0;
+  padding: 12px;
+  border-radius: 5px;
+  white-space: pre-wrap; /* ➕ Wrap long lines */
+  word-break: break-word; /* ➕ Break long words if needed */
+  overflow-x: auto; /* ➕ Optional scroll for code */
+  max-width: 100%; /* ➕ Keep inside the container */
+  font-size: 16px; /* 🔼 Increase font size */
+  line-height: 1.6;
+}
+
+.lesson-container pre b {
+  font-weight: bold;
 }
 
 .quiz-container {

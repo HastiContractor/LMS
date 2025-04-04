@@ -17,11 +17,11 @@
 
   <!--Display Lessons-->
   <div *ngIf="course.lessons.length > 0" class="lesson-container">
-    <h2>Lesson:{{ course.lessons[lessonIndex].title }}</h2>
+    <h2>{{ course.lessons[lessonIndex].title }}</h2>
     <!--Sections-->
     <div *ngFor="let section of course.lessons[lessonIndex].sections">
       <h3>{{ section.heading }}</h3>
-      <p>{{ section.content }}</p>
+      <div [innerHTML]="formatSectionContent(section.content)"></div>
       <img
         *ngIf="section.imageUrl"
         [src]="section.imageUrl"

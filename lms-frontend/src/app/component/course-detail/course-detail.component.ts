@@ -73,6 +73,32 @@ export class CourseDetailComponent implements OnInit {
       );
   }
 
+  formatSectionContent(content: string): string {
+    const escaped = this.escapeHtml(content);
+
+    // Convert code blocks ```...``` to <pre><b>...</b></pre>
+    const formatted = escaped.replace(
+      /```(?:\w+)?\n([\s\S]*?)```/g,
+      (_match, code) => {
+        return `<pre><b>${code}</b></pre>`;
+      }
+    );
+
+    // Replace normal newlines with <br> (outside of code blocks)
+    return formatted.replace(/\n/g, '<br>');
+  }
+
+  escapeHtml(text: string): string {
+    const map: any = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;',
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+  }
+
   //navigate to the previous lesson
   prevLesson(): void {
     if (this.lessonIndex > 0) {
