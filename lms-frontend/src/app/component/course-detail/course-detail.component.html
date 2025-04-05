@@ -1,62 +1,168 @@
-<div *ngIf="course" class="course-container">
-  <h1>{{ course.title }}</h1>
-  <p>{{ course.description }}</p>
-
-  <!--Navigation Buttons-->
-  <div class="nav-buttons">
-    <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
-      ⬅️Previous
-    </button>
-    <button
-      (click)="nextLesson()"
-      [disabled]="lessonIndex === course.lessons.length - 1"
-    >
-      Next➡️
-    </button>
+<div class="course-details">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.shrink]="isSidebarCollapsed">
+    <ul>
+      <li>
+        <div class="menu-toggle" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </div>
+      </li>
+      <li>
+        <a
+          (click)="navigateToDashboard()"
+          (mouseenter)="changeIcon('dashboard', true)"
+          (mouseleave)="changeIcon('dashboard', false)"
+        >
+          <i class="{{ dashboardIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Dashboard</span>
+          <span class="tooltip">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToCourses()"
+          (mouseenter)="changeIcon('courses', true)"
+          (mouseleave)="changeIcon('courses', false)"
+        >
+          <i class="{{ coursesIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Courses</span>
+          <span class="tooltip">Courses</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToStudents()"
+          (mouseenter)="changeIcon('students', true)"
+          (mouseleave)="changeIcon('students', false)"
+        >
+          <i class="{{ studentsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Students</span>
+          <span class="tooltip">Students</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToReports()"
+          (mouseenter)="changeIcon('reports', true)"
+          (mouseleave)="changeIcon('reports', false)"
+        >
+          <i class="{{ reportsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Reports</span>
+          <span class="tooltip">Reports</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="navigateToSettings()"
+          (mouseenter)="changeIcon('settings', true)"
+          (mouseleave)="changeIcon('settings', false)"
+        >
+          <i class="{{ settingsIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Settings</span>
+          <span class="tooltip">Settings</span>
+        </a>
+      </li>
+      <li>
+        <a
+          (click)="logout()"
+          (mouseenter)="changeIcon('logout', true)"
+          (mouseleave)="changeIcon('logout', false)"
+        >
+          <i class="{{ logoutIcon }}"></i>
+          <span *ngIf="!isSidebarCollapsed">Logout</span>
+          <span class="tooltip">Logout</span>
+        </a>
+      </li>
+    </ul>
   </div>
 
-  <!--Display Lessons-->
-  <div *ngIf="course.lessons.length > 0" class="lesson-container">
-    <h2>{{ course.lessons[lessonIndex].title }}</h2>
-    <!--Sections-->
-    <div *ngFor="let section of course.lessons[lessonIndex].sections">
-      <h3>{{ section.heading }}</h3>
-      <div [innerHTML]="formatSectionContent(section.content)"></div>
-      <img
-        *ngIf="section.imageUrl"
-        [src]="section.imageUrl"
-        alt="Lesson Image"
-      />
-      <video *ngIf="section.videoUrl" controls>
-        <source [src]="section.videoUrl" type="video/mp4" />
-        Your browser doent support the video
-      </video>
-    </div>
+  <!-- Main Content Wrapper -->
+  <div class="main-content-wrapper">
+    <!-- Header (Fixed at the top) -->
+    <div class="header">
+      <div class="header-left">
+        <h2 class="logo">
+          Welcome,
+          <span>{{ userName }}</span>
+        </h2>
+      </div>
 
-    <!--Quizzes-->
-    <div class="quiz-container">
-      <h3>Quiz</h3>
-      <div *ngFor="let quiz of course.lessons[lessonIndex].quizzes">
-        <p>
-          <b>{{ quiz.question }}</b>
-        </p>
-        <ul>
-          <li *ngFor="let option of quiz.options">{{ option }}</li>
-        </ul>
+      <!-- Move user-info outside header-left -->
+      <div class="user-info">
+        <i class="fas fa-bell"></i>
+        <img src="{{ imageURL }}" alt="Profile" class="profile-img" />
       </div>
     </div>
 
-    <!--Navigation Buttons-->
-    <div class="nav-buttons">
-      <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
-        ⬅️Previous
-      </button>
-      <button
-        (click)="nextLesson()"
-        [disabled]="lessonIndex === course.lessons.length - 1"
-      >
-        Next➡️
-      </button>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- <div class="top-bar">
+        <h2>Courses</h2>
+      </div> -->
+
+      <div *ngIf="course" class="course-container">
+        <h1>{{ course.title }}</h1>
+        <div [innerHTML]="formatSectionContent(course.description)"></div>
+        <!-- <p>{{ course.description }}</p> -->
+
+        <!--Navigation Buttons-->
+        <div class="nav-buttons">
+          <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
+            ⬅️Previous
+          </button>
+          <button
+            (click)="nextLesson()"
+            [disabled]="lessonIndex === course.lessons.length - 1"
+          >
+            Next➡️
+          </button>
+        </div>
+
+        <!--Display Lessons-->
+        <div *ngIf="course.lessons.length > 0" class="lesson-container">
+          <h2>{{ course.lessons[lessonIndex].title }}</h2>
+          <!--Sections-->
+          <div *ngFor="let section of course.lessons[lessonIndex].sections">
+            <h3>{{ section.heading }}</h3>
+            <div [innerHTML]="formatSectionContent(section.content)"></div>
+            <img
+              *ngIf="section.imageUrl"
+              [src]="section.imageUrl"
+              alt="Lesson Image"
+            />
+            <video *ngIf="section.videoUrl" controls>
+              <source [src]="section.videoUrl" type="video/mp4" />
+              Your browser doent support the video
+            </video>
+          </div>
+
+          <!--Quizzes-->
+          <div class="quiz-container">
+            <h3>Quiz</h3>
+            <div *ngFor="let quiz of course.lessons[lessonIndex].quizzes">
+              <p>
+                <b>{{ quiz.question }}</b>
+              </p>
+              <ul>
+                <li *ngFor="let option of quiz.options">{{ option }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <!--Navigation Buttons-->
+          <div class="nav-buttons">
+            <button (click)="prevLesson()" [disabled]="lessonIndex === 0">
+              ⬅️Previous
+            </button>
+            <button
+              (click)="nextLesson()"
+              [disabled]="lessonIndex === course.lessons.length - 1"
+            >
+              Next➡️
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

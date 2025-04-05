@@ -310,7 +310,7 @@
         <div class="course-form-container" *ngIf="showForm">
           <form
             [formGroup]="courseForm"
-            (ngSubmit)="isEditing ? updateCourse() : createCourse()"
+            (ngSubmit)="isEditingCourse ? updateCourse() : createCourse()"
           >
             <h3>{{ isEditingCourse ? "Edit Course" : "Add New Course" }}</h3>
 
@@ -344,7 +344,7 @@
             </select>
 
             <button type="submit">
-              {{ isEditing ? "Update Course" : "Create Course" }}
+              {{ isEditingCourse ? "Update Course" : "Create Course" }}
             </button>
             <button
               type="button"
