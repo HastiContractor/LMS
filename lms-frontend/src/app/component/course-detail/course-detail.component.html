@@ -169,16 +169,64 @@
             </video>
           </div>
 
-          <!--Quizzes-->
-          <div class="quiz-container">
+          <!-- Quizzes -->
+          <div *ngIf="currentLessonQuizzes.length > 0" class="quiz-container">
             <h3>Quiz</h3>
-            <div *ngFor="let quiz of course.lessons[lessonIndex].quizzes">
+            <!-- Score Summary -->
+            <div
+              *ngIf="
+                checkedQuestions.size ===
+                course.lessons[lessonIndex].quizzes.length
+              "
+              class="score-summary"
+            >
+              <h6>
+                Your Score: {{ correctCount }} /
+                {{ course.lessons[lessonIndex].quizzes.length }}
+              </h6>
+            </div>
+
+            <div
+              *ngFor="
+                let quiz of course.lessons[lessonIndex].quizzes;
+                let i = index
+              "
+            >
               <p>
                 <b>{{ quiz.question }}</b>
               </p>
+
               <ul>
-                <li *ngFor="let option of quiz.options">{{ option }}</li>
+                <li
+                  *ngFor="let option of quiz.options"
+                  [ngClass]="{
+                    correct:
+                      feedback[i] === 'Correct!' && userAnswers[i] === option,
+                    incorrect:
+                      feedback[i] !== 'Correct!' && userAnswers[i] === option
+                  }"
+                >
+                  <input
+                    type="radio"
+                    [name]="'quiz' + i"
+                    [value]="option"
+                    [(ngModel)]="userAnswers[i]"
+                    (change)="checkAnswer(i)"
+                    [ngClass]="getOptionClass(i, option)"
+                  />
+                  {{ option }}
+                </li>
               </ul>
+
+              <div
+                *ngIf="feedback[i]"
+                [ngClass]="{
+                  correct: feedback[i] === 'Correct!',
+                  incorrect: feedback[i] !== 'Correct!'
+                }"
+              >
+                {{ feedback[i] }}
+              </div>
             </div>
           </div>
 

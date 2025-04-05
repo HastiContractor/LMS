@@ -255,6 +255,21 @@
   margin-top: 20px;
   padding: 15px;
   border-top: 2px solid #ccc;
+
+  input[type="radio"].correct-radio {
+    accent-color: green;
+  }
+
+  input[type="radio"].incorrect-radio {
+    accent-color: red;
+  }
+
+  .score-summary {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a73e8;
+  }
 }
 
 .quiz-container ul {

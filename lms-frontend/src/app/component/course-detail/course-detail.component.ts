@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import confetti from 'canvas-confetti';
 
@@ -33,7 +34,7 @@ interface Quiz {
 
 @Component({
   selector: 'app-course-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss',
 })
@@ -49,6 +50,13 @@ export class CourseDetailComponent implements OnInit {
 
   course!: Course;
   lessonIndex: number = 0;
+
+  userAnswers: string[] = [];
+  feedback: string[] = [];
+  correctCount: number = 0;
+  totalScore: number = 0;
+  checkedQuestions: Set<number> = new Set(); //prevent double scoring
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -114,6 +122,53 @@ export class CourseDetailComponent implements OnInit {
       );
   }
 
+  checkAnswer(index: number) {
+    const selected = this.userAnswers[index];
+    const correct =
+      this.course.lessons[this.lessonIndex].quizzes[index].correctAnswer;
+
+    if (!selected) {
+      this.feedback[index] = 'Please select an answer.';
+      return;
+    }
+
+    // Check if already answered
+    if (this.checkedQuestions.has(index)) {
+      return;
+    }
+
+    if (selected === correct) {
+      this.feedback[index] = 'Correct!';
+      this.correctCount++;
+      this.totalScore += 1; // Each question is 1 point
+    } else {
+      this.feedback[index] = `Incorrect. Correct answer: ${correct}`;
+    }
+
+    this.checkedQuestions.add(index);
+  }
+
+  getOptionClass(index: number, option: string): string {
+    const selected = this.userAnswers[index];
+    const correct =
+      this.course.lessons[this.lessonIndex].quizzes[index].correctAnswer;
+
+    if (selected === option) {
+      return selected === correct ? 'correct-radio' : 'incorrect-radio';
+    }
+    return '';
+  }
+
+  resetQuizState() {
+    const quizLength =
+      this.course.lessons[this.lessonIndex]?.quizzes?.length || 0;
+    this.userAnswers = new Array(quizLength).fill('');
+    this.feedback = new Array(quizLength).fill('');
+    this.correctCount = 0;
+    this.totalScore = 0;
+    this.checkedQuestions = new Set();
+  }
+
   formatSectionContent(content: string): string {
     const escaped = this.escapeHtml(content);
 
@@ -157,10 +212,15 @@ export class CourseDetailComponent implements OnInit {
       );
   }
 
+  get currentLessonQuizzes() {
+    return this.course?.lessons?.[this.lessonIndex]?.quizzes ?? [];
+  }
+
   //navigate to the previous lesson
   prevLesson(): void {
     if (this.lessonIndex > 0) {
       this.lessonIndex--;
+      this.resetQuizState();
     }
   }
 
@@ -195,6 +255,7 @@ export class CourseDetailComponent implements OnInit {
           this.getProgress();
           if (this.lessonIndex < this.course.lessons.length - 1) {
             this.lessonIndex++;
+            this.resetQuizState();
           } else {
             console.log("You've completed last lesson!");
           }
@@ -253,6 +314,8 @@ export class CourseDetailComponent implements OnInit {
         (res) => {
           this.courseStatus = res.status;
           if (this.courseStatus === 'Completed') {
+            this.progress = 100;
+            this.progressPercentage = 100;
             this.triggerCelebration();
           }
         },
