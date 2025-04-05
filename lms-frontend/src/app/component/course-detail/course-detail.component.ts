@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import confetti from 'canvas-confetti';
 
 interface Course {
   _id: string;
@@ -40,6 +41,12 @@ export class CourseDetailComponent implements OnInit {
   userName: string = '';
   imageURL: string = '';
 
+  progressPercentage: number = 0;
+
+  courseStatus: string = '';
+  showModal: boolean = false;
+  progress: number = 0;
+
   course!: Course;
   lessonIndex: number = 0;
   constructor(
@@ -49,6 +56,9 @@ export class CourseDetailComponent implements OnInit {
   ) {}
   ngOnInit(): void {
     this.getUserProfile();
+    this.getProgress();
+    this.checkCourseStatusFromBackend();
+
     const courseId = this.route.snapshot.paramMap.get('id');
     if (courseId) {
       this.http
@@ -130,6 +140,23 @@ export class CourseDetailComponent implements OnInit {
     return text.replace(/[&<>"']/g, (m) => map[m]);
   }
 
+  getProgress() {
+    const courseId = this.route.snapshot.paramMap.get('id');
+    if (!courseId) return;
+    this.http
+      .get(`http://localhost:3000/api/progress/summary?courseId=${courseId}`, {
+        headers: { Authorization: localStorage.getItem('token') || '' },
+      })
+      .subscribe(
+        (res: any) => {
+          this.progressPercentage = res.percentage;
+        },
+        (error) => {
+          console.error('Error getting progress: ', error);
+        }
+      );
+  }
+
   //navigate to the previous lesson
   prevLesson(): void {
     if (this.lessonIndex > 0) {
@@ -137,11 +164,124 @@ export class CourseDetailComponent implements OnInit {
     }
   }
 
+  loadProgress() {
+    this.http
+      .get('http://localhost:3000/api/progress/summary', {
+        headers: { Authorization: localStorage.getItem('token') || '' },
+      })
+      .subscribe(
+        (res: any) => {
+          this.progressPercentage = res.percentage;
+        },
+        (error) => {
+          console.error('Error getting progress: ', error);
+        }
+      );
+  }
+
   //navigate to the next lesson
   nextLesson(): void {
-    if (this.lessonIndex < this.course.lessons.length - 1) {
-      this.lessonIndex++;
-    }
+    const currentLessonId = this.course.lessons[this.lessonIndex]._id;
+    this.http
+      .post<any>(
+        'http://localhost:3000/api/progress/complete',
+        { lessonId: currentLessonId },
+        {
+          headers: { Authorization: localStorage.getItem('token') || '' },
+        }
+      )
+      .subscribe(
+        () => {
+          this.getProgress();
+          if (this.lessonIndex < this.course.lessons.length - 1) {
+            this.lessonIndex++;
+          } else {
+            console.log("You've completed last lesson!");
+          }
+        },
+        (error) => {
+          console.error('Error marking lesson complete:', error);
+        }
+      );
+  }
+
+  completeLastLesson(): void {
+    const lessonId = this.course.lessons[this.lessonIndex]._id;
+    this.courseStatus = 'Completed';
+    this.progress = 100;
+    this.progressPercentage = 100;
+    this.showModal = true;
+
+    this.http
+      .post<any>(
+        'http://localhost:3000/api/progress/complete',
+        { lessonId },
+        {
+          headers: {
+            Authorization: localStorage.getItem('token') || '',
+          },
+        }
+      )
+      .subscribe(
+        () => {
+          this.getProgress();
+          console.log('Course completed!');
+        },
+        (error) => {
+          console.error('Error marking last lesson complete:', error);
+        }
+      );
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
+
+  checkCourseStatusFromBackend() {
+    const courseId = this.route.snapshot.paramMap.get('id');
+    if (!courseId) return;
+
+    this.http
+      .get<{ status: string }>(
+        `http://localhost:3000/api/progress/status?courseId=${courseId}`,
+        {
+          headers: { Authorization: localStorage.getItem('token') || '' },
+        }
+      )
+      .subscribe(
+        (res) => {
+          this.courseStatus = res.status;
+          if (this.courseStatus === 'Completed') {
+            this.triggerCelebration();
+          }
+        },
+        (error) => {
+          console.error('Error fetching course status:', error);
+        }
+      );
+  }
+
+  onCompleteClick(): void {
+    this.completeLastLesson();
+  }
+
+  triggerCelebration() {
+    this.showModal = true;
+    this.progress = 100;
+    this.launchConfetti();
+  }
+
+  launchConfetti() {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
+
+  closeModal() {
+    this.showModal = false;
   }
 
   dashboardIcon = 'fas fa-home';

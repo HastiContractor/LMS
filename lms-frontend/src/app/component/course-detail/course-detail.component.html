@@ -96,14 +96,41 @@
 
     <!-- Main Content -->
     <div class="main-content">
-      <!-- <div class="top-bar">
-        <h2>Courses</h2>
-      </div> -->
+      <div class="progress-container">
+        <h4>Your Progress: {{ progressPercentage }}%</h4>
+        <div class="progress-bar-wrapper">
+          <div
+            class="progress-bar-fill"
+            [style.width.%]="progressPercentage"
+          ></div>
+        </div>
+      </div>
+      <div class="course-container">
+        <!-- <button
+          *ngIf="courseStatus !== 'Completed'"
+          (click)="onCompleteClick()"
+        >
+          Mark as Complete
+        </button> -->
+
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progress"></div>
+        </div>
+
+        <!-- Celebration Modal -->
+        <div class="modal" *ngIf="showModal">
+          <div class="modal-content">
+            <h2>🎉 Course Completed!</h2>
+            <p>Great job finishing the course!</p>
+            <button (click)="closeModal()">Back to Dashboard</button>
+            <button>Download Certificate</button>
+          </div>
+        </div>
+      </div>
 
       <div *ngIf="course" class="course-container">
         <h1>{{ course.title }}</h1>
         <div [innerHTML]="formatSectionContent(course.description)"></div>
-        <!-- <p>{{ course.description }}</p> -->
 
         <!--Navigation Buttons-->
         <div class="nav-buttons">
@@ -115,6 +142,12 @@
             [disabled]="lessonIndex === course.lessons.length - 1"
           >
             Next➡️
+          </button>
+          <button
+            *ngIf="lessonIndex === course.lessons.length - 1"
+            (click)="completeLastLesson()"
+          >
+            Finish
           </button>
         </div>
 
