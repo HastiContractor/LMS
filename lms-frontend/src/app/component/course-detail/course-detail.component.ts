@@ -347,6 +347,29 @@ export class CourseDetailComponent implements OnInit {
     this.showModal = false;
   }
 
+  downloadCertificate() {
+    if (!this.userName || !this.course?.title) {
+      alert('User or course data not available yet. Please try again shortly.');
+      return;
+    }
+
+    const userName = this.userName;
+    const courseName = this.course.title;
+    const url = `http://localhost:3000/api/download-certificate/${userName}/${courseName}`;
+
+    this.http.get(url, { responseType: 'blob' }).subscribe((res) => {
+      const blob = new Blob([res], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${userName}_Certificate.pdf`;
+      a.click();
+
+      window.URL.revokeObjectURL(downloadUrl);
+    });
+  }
+
   dashboardIcon = 'fas fa-home';
   coursesIcon = 'fas fa-book';
   studentsIcon = 'fas fa-users';

@@ -1,31 +1,41 @@
-const Certificate = require("../models/Certificate");
+const PDFDocument = require("pdfkit");
 
-// Issue a certificate
-exports.issueCertificate = async (req, res) => {
-  try {
-    const { studentId, courseId, certificateUrl } = req.body;
+exports.generateCertificate = (req, res) => {
+  const { userName, courseName } = req.params;
+  const doc = new PDFDocument();
 
-    const certificate = new Certificate({
-      student: studentId,
-      course: courseId,
-      certificateUrl,
-    });
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=${userName}_Certificate.pdf`
+  );
 
-    await certificate.save();
-    res.json({ message: "Certificate issued successfully", certificate });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  doc.pipe(res);
 
-// Get certificates for a student
-exports.getCertificates = async (req, res) => {
-  try {
-    const certificates = await Certificate.find({
-      student: req.user.id,
-    }).populate("course");
-    res.json(certificates);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  // Certificate Design
+  doc.fontSize(25).text("Certificate of Completion", { align: "center" });
+
+  doc.moveDown();
+  doc.fontSize(20).text(`This is to certify that`, { align: "center" });
+
+  doc.moveDown();
+  doc.fontSize(30).fillColor("blue").text(`${userName}`, { align: "center" });
+
+  doc.moveDown();
+  doc.fontSize(20).fillColor("black").text(`has successfully completed`, {
+    align: "center",
+  });
+
+  doc.moveDown();
+  doc.fontSize(25).fillColor("green").text(`${courseName}`, {
+    align: "center",
+  });
+
+  doc.moveDown();
+  doc
+    .fontSize(14)
+    .fillColor("black")
+    .text(`Date: ${new Date().toLocaleDateString()}`, { align: "right" });
+
+  doc.end();
 };

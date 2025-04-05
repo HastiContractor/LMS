@@ -44,5 +44,7 @@ const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
 const reportRoutes = require("./routes/reportRoutes");
 app.use("/api/reports", reportRoutes);
+const certificateRoute = require("./routes/certificateRoutes");
+app.use("/api", certificateRoute);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
