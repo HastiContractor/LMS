@@ -72,7 +72,6 @@ exports.getNewestLessons = async (req, res) => {
       .sort({ createdAt: -1 }) // Sort in descending order (newest first)
       .limit(5) // Limit to the latest 5 lessons
       .populate("course", "title"); // Populate course title
-
     res.json(lessons);
   } catch (error) {
     console.error("Error fetching newest lessons:", error);

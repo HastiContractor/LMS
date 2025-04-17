@@ -20,8 +20,9 @@ router.post(
   roleMiddleware(["admin", "instructor"]),
   addLesson
 );
-router.get("/:courseId", authMiddleware, getLessons);
+
 router.get("/newest", authMiddleware, getNewestLessons);
+router.get("/:courseId", authMiddleware, getLessons);
 router.put(
   "/:lessonId",
   authMiddleware,

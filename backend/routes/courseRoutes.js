@@ -23,11 +23,11 @@ router.post(
   createCourse
 );
 router.get("/", getCourses);
+router.get("/students", authMiddleware, getStudents);
 router.get("/:courseId", getCourseDetails);
 router.get("/instructor/:id", authMiddleware, getInstructorCourses);
 router.get("/count/:id", authMiddleware, countCourse);
-router.get("/students/count/:id", authMiddleware, totalStudents);
-router.get("/students", authMiddleware, getStudents);
+router.get("/students/count", authMiddleware, totalStudents);
 router.post("/enroll/:courseId", authMiddleware, enrollCourse);
 router.delete(
   "/:courseId",

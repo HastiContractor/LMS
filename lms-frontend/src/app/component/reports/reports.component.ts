@@ -2,10 +2,25 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { PieChartComponent } from './pie-chart.component';
+import { LineChartComponent } from './line-chart.component';
+import { BarChartComponent } from './bar-chart.component';
+
+interface CourseReport {
+  courseTitle: string;
+  totalStudents: number;
+  averageCompletionRate: string;
+  certificateIssued: number;
+}
 
 @Component({
   selector: 'app-reports',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    PieChartComponent,
+    LineChartComponent,
+    BarChartComponent,
+  ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
 })
@@ -13,10 +28,45 @@ export class ReportsComponent implements OnInit {
   userName: string = '';
   imageURL: string = '';
 
+  instructorId: string = 'YOUR_INSTRUCTOR_ID';
+  courseReports: any[] = [];
+
+  //separate data for each chart
+  barChartData: any[] = [];
+  lineChartData: any[] = [];
+  pieChartData: any[] = [];
+
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.getUserProfile();
+    this.instructorId = localStorage.getItem('userId') || '';
+    const apiUrl = `http://localhost:3000/api/reports/instructor-dashboard/${this.instructorId}`;
+    this.http.get<{ reports: CourseReport[] }>(apiUrl).subscribe({
+      next: (res) => {
+        this.courseReports = res.reports;
+
+        // Prepare chart data from courseReports
+        this.barChartData = res.reports.map((c: CourseReport) => ({
+          label: c.courseTitle,
+          value: c.totalStudents,
+        }));
+
+        this.lineChartData = res.reports.map((c: CourseReport) => ({
+          label: c.courseTitle,
+          value: parseFloat(c.averageCompletionRate),
+        }));
+        console.log(this.lineChartData);
+
+        this.pieChartData = res.reports.map((c: CourseReport) => ({
+          label: c.courseTitle,
+          value: c.certificateIssued,
+        }));
+      },
+      error: (err) => {
+        console.error('Error fetching instructor report', err);
+      },
+    });
   }
 
   getUserProfile() {

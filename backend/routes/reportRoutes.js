@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { getReports, createReport } = require("../controllers/reportController");
+const {
+  getInstructorDashboardReport,
+} = require("../controllers/reportController");
 
-router.get("/", getReports);
-router.post("/", createReport);
+router.get("/instructor-dashboard/:instructorId", getInstructorDashboardReport);
 
 module.exports = router;

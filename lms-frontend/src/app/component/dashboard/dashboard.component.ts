@@ -38,10 +38,9 @@ export class DashboardComponent implements OnInit {
         )
         .subscribe(
           (response) => {
-            console.log('User: ', response.name);
             this.userName = response.name;
             this.imageURL = response.profilePicture || 'assets/profile.png';
-            console.log('Profile Image URL:', this.imageURL); // Debugging
+            this.getNewestContent();
           },
           (error) => {
             console.error('Error fetching user profile: ', error);
@@ -81,17 +80,13 @@ export class DashboardComponent implements OnInit {
       console.error('No ID or token found');
       return;
     }
-
-    console.log('Fetching students for instructor: ', instructorId);
-
     this.http
       .get<{ totalStudents: number }>(
-        `http://localhost:3000/api/courses/students/count/${instructorId}`,
+        'http://localhost:3000/api/courses/students/count/',
         { headers: { Authorization: token } }
       )
       .subscribe(
         (response) => {
-          console.log('Total Students: ', response.totalStudents);
           this.studentCount = response.totalStudents;
         },
         (error) => {
@@ -100,12 +95,16 @@ export class DashboardComponent implements OnInit {
       );
   }
   getNewestContent() {
-    if (!this.userName) return;
+    const token = localStorage.getItem('token');
+    if (!this.userName || !token) return;
 
     this.http
-      .get<Lesson[]>('http://localhost:3000/api/lessons/newest')
+      .get<Lesson[]>('http://localhost:3000/api/lessons/newest', {
+        headers: { Authorization: token },
+      })
       .subscribe(
         (response) => {
+          console.log('newestLesson: ', this.newestLessons);
           this.newestLessons = response;
         },
         (error) => {

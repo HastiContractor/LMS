@@ -95,6 +95,27 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content"></div>
+    <div class="main-content">
+      <div class="report-container">
+        <h2 class="report-title">LMS Report Dashboard</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+          <div class="card">
+            <h3 class="text-lg font-bold mb-2">Total Students Per Course</h3>
+            <app-bar-chart [data]="barChartData"></app-bar-chart>
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-bold mb-2">Average Completion Rate (%)</h3>
+            <app-line-chart [data]="lineChartData"></app-line-chart>
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-bold mb-2">Certificates Issued</h3>
+            <app-pie-chart [data]="pieChartData"></app-pie-chart>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

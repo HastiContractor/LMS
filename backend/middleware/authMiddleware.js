@@ -8,14 +8,12 @@ module.exports = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded Token: ", decoded);
 
     //fetch user from db
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log("Authenticated user: ", user); //debugging
     req.user = user;
     next();
   } catch (error) {

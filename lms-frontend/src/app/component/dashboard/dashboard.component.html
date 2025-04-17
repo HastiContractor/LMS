@@ -103,12 +103,12 @@
       <div class="stats">
         <div class="card">
           <i class="fas fa-book"></i>
-          <h3>{{ courseCount }}</h3>
+          <h3>{{ courseCount > 0 ? courseCount : "No courses yet" }}</h3>
           <p>Courses</p>
         </div>
         <div class="card">
           <i class="fas fa-users"></i>
-          <h3>{{ studentCount }}</h3>
+          <h3>{{ studentCount > 0 ? studentCount : "No students yet" }}</h3>
           <p>Users</p>
         </div>
         <div class="card">

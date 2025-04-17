@@ -144,12 +144,10 @@ exports.countCourse = async (req, res) => {
 // Get total number of students across all courses
 exports.totalStudents = async (req, res) => {
   try {
-    const instructorId = req.params.id;
-    //console.log("Received Instructor ID: ", instructorId)
+    const instructorId = req.user.id;
     if (!instructorId) {
       return res.status(400).json({ message: "Instructor ID is required" });
     }
-    console.log("Instructor ID received: ", instructorId);
     const courses = await Course.find({ instructor: instructorId }, "students"); // Get only student lists
     const totalStudents = courses.reduce(
       (sum, course) => sum + course.students.length,
@@ -167,19 +165,24 @@ exports.getStudents = async (req, res) => {
   try {
     const instructorId = req.user.id;
     const instructorCourse = await Course.find({ instructor: instructorId });
+
     if (!instructorCourse.length) {
       return res.json({ message: "No students found, no courses assigned." });
     }
-    const courseIds = instructorCourse.map((course) => course._id);
+    const studentIds = instructorCourse.flatMap((course) => course.students);
+    const uniqueStudentIds = [
+      ...new Set(studentIds.map((id) => id.toString())),
+    ];
 
     const students = await User.find({
+      _id: { $in: uniqueStudentIds },
       role: "student",
-      enrolledCourses: { $in: courseIds },
     })
       .select("name email enrolledCourses createdAt")
       .populate({ path: "enrolledCourses", select: "title" });
     res.json(students);
   } catch (error) {
+    console.error("Error in getStudent:", error);
     res.status(500).json({ error: error.message });
   }
 };
