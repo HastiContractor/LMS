@@ -247,113 +247,117 @@
           </div>
 
           <!-- Add Lesson Form -->
-          <div class="course-form-container" *ngIf="showLessonForm">
+          <div class="modal-backdrop" *ngIf="showLessonForm">
+            <div class="course-form-container">
+              <form
+                [formGroup]="lessonForm"
+                (ngSubmit)="isEditing ? updateLesson() : addLesson()"
+              >
+                <h3>{{ isEditing ? "Edit Lesson" : "Add New Lesson" }}</h3>
+                <label>Lesson Title:</label>
+                <input type="text" formControlName="title" required />
+
+                <h3>Lesson Sections</h3>
+                <div formArrayName="sections">
+                  <div
+                    class="section-container"
+                    *ngFor="let section of sections.controls; let i = index"
+                    [formGroupName]="i"
+                  >
+                    <label>Heading:</label>
+                    <input type="text" formControlName="heading" required />
+
+                    <label>Content:</label>
+                    <textarea formControlName="content"></textarea>
+
+                    <label>Image URL:</label>
+                    <input type="text" formControlName="imageUrl" />
+
+                    <label>Video URL:</label>
+                    <input type="text" formControlName="videoUrl" />
+
+                    <button
+                      type="button"
+                      (click)="removeSection(i)"
+                      class="remove-section-btn"
+                    >
+                      Remove Section
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="addSection()"
+                  class="add-section-btn"
+                >
+                  + Add Section
+                </button>
+                <button type="submit" class="submit-lesson-btn">
+                  {{ isEditing ? "Update Lesson" : "Add Lesson" }}
+                </button>
+                <button
+                  type="button"
+                  class="cancel-btn"
+                  (click)="toggleLessonForm()"
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add/Edit Course Form (Hidden by Default) -->
+        <div class="modal-backdrop" *ngIf="showForm">
+          <div class="course-form-container">
             <form
-              [formGroup]="lessonForm"
-              (ngSubmit)="isEditing ? updateLesson() : addLesson()"
+              [formGroup]="courseForm"
+              (ngSubmit)="isEditingCourse ? updateCourse() : createCourse()"
             >
-              <h3>{{ isEditing ? "Edit Lesson" : "Add New Lesson" }}</h3>
-              <label>Lesson Title:</label>
+              <h3>{{ isEditingCourse ? "Edit Course" : "Add New Course" }}</h3>
+
+              <label>Title:</label>
               <input type="text" formControlName="title" required />
 
-              <h3>Lesson Sections</h3>
-              <div formArrayName="sections">
-                <div
-                  class="section-container"
-                  *ngFor="let section of sections.controls; let i = index"
-                  [formGroupName]="i"
-                >
-                  <label>Heading:</label>
-                  <input type="text" formControlName="heading" required />
+              <label>Description:</label>
+              <textarea formControlName="description" required></textarea>
 
-                  <label>Content:</label>
-                  <textarea formControlName="content"></textarea>
+              <label>Category:</label>
+              <input type="text" formControlName="category" required />
 
-                  <label>Image URL:</label>
-                  <input type="text" formControlName="imageUrl" />
+              <label>Price:</label>
+              <input type="number" formControlName="price" required min="0" />
 
-                  <label>Video URL:</label>
-                  <input type="text" formControlName="videoUrl" />
+              <!-- <label>Image URL:</label>
+            <input type="text" formControlName="image" required /> -->
 
-                  <button
-                    type="button"
-                    (click)="removeSection(i)"
-                    class="remove-section-btn"
-                  >
-                    Remove Section
-                  </button>
-                </div>
-              </div>
+              <label>Label:</label>
+              <select formControlName="label">
+                <option value="New">New</option>
+                <option value="Popular">Popular</option>
+                <option value="Best for Developers">Best for Developers</option>
+              </select>
 
-              <button
-                type="button"
-                (click)="addSection()"
-                class="add-section-btn"
-              >
-                + Add Section
-              </button>
-              <button type="submit" class="submit-lesson-btn">
-                {{ isEditing ? "Update Lesson" : "Add Lesson" }}
+              <label>Label Color:</label>
+              <select formControlName="labelColor">
+                <option value="green">Green(New)</option>
+                <option value="blue">Blue(Popular)</option>
+                <option value="red">Red(Best for Developers)</option>
+              </select>
+
+              <button type="submit">
+                {{ isEditingCourse ? "Update Course" : "Create Course" }}
               </button>
               <button
                 type="button"
                 class="cancel-btn"
-                (click)="toggleLessonForm()"
+                (click)="toggleAddCourse()"
               >
                 Cancel
               </button>
             </form>
           </div>
-        </div>
-
-        <!-- Add/Edit Course Form (Hidden by Default) -->
-        <div class="course-form-container" *ngIf="showForm">
-          <form
-            [formGroup]="courseForm"
-            (ngSubmit)="isEditingCourse ? updateCourse() : createCourse()"
-          >
-            <h3>{{ isEditingCourse ? "Edit Course" : "Add New Course" }}</h3>
-
-            <label>Title:</label>
-            <input type="text" formControlName="title" required />
-
-            <label>Description:</label>
-            <textarea formControlName="description" required></textarea>
-
-            <label>Category:</label>
-            <input type="text" formControlName="category" required />
-
-            <label>Price:</label>
-            <input type="number" formControlName="price" required min="0" />
-
-            <!-- <label>Image URL:</label>
-            <input type="text" formControlName="image" required /> -->
-
-            <label>Label:</label>
-            <select formControlName="label">
-              <option value="New">New</option>
-              <option value="Popular">Popular</option>
-              <option value="Best for Developers">Best for Developers</option>
-            </select>
-
-            <label>Label Color:</label>
-            <select formControlName="labelColor">
-              <option value="green">Green(New)</option>
-              <option value="blue">Blue(Popular)</option>
-              <option value="red">Red(Best for Developers)</option>
-            </select>
-
-            <button type="submit">
-              {{ isEditingCourse ? "Update Course" : "Create Course" }}
-            </button>
-            <button
-              type="button"
-              class="cancel-btn"
-              (click)="toggleAddCourse()"
-            >
-              Cancel
-            </button>
-          </form>
         </div>
       </div>
     </div>
